@@ -23,7 +23,7 @@ sub setup {
 }
 
 {
-  my($ac, $output) = setup(2);
+  my($ac, $output) = setup(2);  # "csv 2"
   $ac->init;
   is_deeply($ac->columns, [1], "column normalization");
   $ac->run;
@@ -31,9 +31,9 @@ sub setup {
 }
 
 {
-  my($ac, $output) = setup(1, 0-1);
+  my($ac, $output) = setup(1, -1);  # "csv 1 -1"
   $ac->init;
   is_deeply($ac->columns, [0, -1], "column normalization");
   $ac->run;
-  is($$output, "1,3\n,11,33\n111,333\n", "1-based, two columns, -1");
+  is($$output, "1,3\n,11,33\n111,333\n", "1-based, two columns, negative columns");
 }
