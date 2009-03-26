@@ -10,7 +10,7 @@ Example
 Reads the first two fields, as well as the last one, from "report.csv".
 Data is cleaned up and emitted as CSV.
 
-  csv --input report.csv --output_separator=\007
+  csv --input report.csv --to_tsv
 
 Converts the whole report to TSV (tab-separated values).
 

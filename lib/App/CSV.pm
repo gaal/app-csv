@@ -52,27 +52,34 @@ hasrw _output_csv => ();
 
 # Text::CSV options, straight from the manpage.
 # We override Text::CSV's default here... because it's WRONG.
-our @TextCSVOptions = qw(quote_char escape_char sep_char eol always_quote
-      binary keep_meta_info allow_loose_quotes allow_loose_escapes
-      allow_whitespace verbatim);
-hasrw quote_char => (default => '"');
-hasrw escape_char => (default => '"');
-hasrw sep_char => (default => ',');
-hasrw eol => (default => '');
-hasrw always_quote => (default => 0);
-hasrw binary => (default => 1);
-hasrw keep_meta_info => (default => 0);
-hasrw allow_loose_quotes => (default => 0);
-hasrw allow_loose_escapes => (default => 0);
-hasrw allow_whitespace => (default => 0);
-hasrw verbatim => (default => 0);
+our %TextCSVOptions = (
+    quote_char          => ['Str', '"'],
+    escape_char         => ['Str', '"'],
+    sep_char            => ['Str', ','],
+    eol                 => ['Any', undef],
+    always_quote        => ['Int', 0],
+    binary              => ['Int', 1],
+    keep_meta_info      => ['Int', 0],
+    allow_loose_quotes  => ['Int', 0],
+    allow_loose_escapes => ['Int', 0],
+    allow_whitespace    => ['Int', 0],
+    verbatim            => ['Int', 0],
+);
 
 # output CSV processor options default to whatever the input option is.
 # But you can override it just for output by saying --output_foo instead
 # of --foo.   (Thanks, gphat and t0m.)
-for my $attr (@TextCSVOptions) {
-  hasrw "output_$attr" => (lazy => 1, default => sub { $_[0]->$attr });
+while (my($attr, $opts) = each %TextCSVOptions) {
+  my($type, $default) = @$opts;
+  hasrw $attr => (isa => $type, default => $default);
+  hasrw "output_$attr" => (isa => $type,
+      lazy => 1, default => sub { $_[0]->$attr });
 }
+
+# TODO: command line aliases?
+hasrw from_tsv => (isa => 'Bool', predicate => 'has_from_tsv');
+hasrw to_tsv => (isa => 'Bool', predicate => 'has_to_tsv');
+
 
 sub __normalize_column {
   my($in) = @_;
@@ -109,12 +116,22 @@ sub init {
   my @columns = (($self->has_columns ? @{$self->columns} : ()), @{$self->extra_argv});
   $self->columns([map { __normalize_column($_) } @columns]) if @columns;
 
-  $self->_input_csv(Text::CSV->new({
-      map { $_ => $self->$_ } @TextCSVOptions }));
-  $self->_output_csv(Text::CSV->new({
-      map { my $o = "output_$_"; $_ => $self->$o } @TextCSVOptions }));
-
   $self->_setup_fh($_) for qw(input output);
+
+  # DWIMmy TSV
+  if ($self->from_tsv ||
+      ($self->has_from_tsv && $self->input && $self->input =~ /\.tsv$/)) {
+    $self->sep_char("\t");
+  }
+  if ($self->to_tsv ||
+      ($self->has_to_tsv && $self->output && $self->output =~ /\.tsv$/)) {
+    $self->output_sep_char("\t");
+  }
+
+  $self->_input_csv(Text::CSV->new({
+      map { $_ => $self->$_ } keys %TextCSVOptions }));
+  $self->_output_csv(Text::CSV->new({
+      map { my $o = "output_$_"; $_ => $self->$o } keys %TextCSVOptions }));
 }
 
 sub run {
