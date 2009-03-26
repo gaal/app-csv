@@ -16,6 +16,7 @@ BEGIN {
 
 with 'MooseX::Getopt';
 
+# Why isn't this in Moose?
 sub hasrw {
   my($attr, @args) = @_;
   has $attr => (
@@ -66,8 +67,9 @@ hasrw allow_loose_escapes => (default => 0);
 hasrw allow_whitespace => (default => 0);
 hasrw verbatim => (default => 0);
 
-# output CSV processor defaults to whatever the input value is.
-# (Thanks, gphat and t0m.)
+# output CSV processor options default to whatever the input option is.
+# But you can override it just for output by saying --output_foo instead
+# of --foo.   (Thanks, gphat and t0m.)
 for my $attr (@TextCSVOptions) {
   hasrw "output_$attr" => (lazy => 1, default => sub { $_[0]->$attr });
 }
@@ -78,19 +80,22 @@ sub __normalize_column {
 }
 
 # TODO: You know, I end up with something like this on a lot of projects.
-# Why isn't it easier?
+# Why isn't this easier? Having to remember to "use IO::Handle" is sad, too.
 sub _setup_fh {
   my($self, $name) = @_;
   my $fh_name = "_${name}_fh";
   return if $self->$fh_name;  # someone had already injected a fh.
-  my $dir = $name eq 'input' ? '' : '>';
+
+  # ARGH. You can't open $fh, ">-", but you can't open $fh, "", "-" !?
+  my $dir2 = $name eq 'input' ? '' : '>';
+  my $dir3 = $name eq 'input' ? '<' : '>';
 
   my $fh;
   $self->$name('-') if not defined $self->$name;
   if ($self->$name eq '-') {  # use stdio
-    open $fh, "$dir-" or die "open: stdio: $!";
+    open $fh, "$dir2-" or die "open: stdio: $!";
   } else {
-    open $fh, $dir, $name or die "open: $name: $!";
+    open $fh, $dir3, $self->$name or die "open: $self->$name: $!";
   }
   $self->$fh_name($fh);
 }
@@ -123,7 +128,6 @@ sub run {
       if ($self->has_columns) {
         @$data = @$data[@{ $self->columns }];
       }
-      #warn "# @data/@{$self->columns}\n";
       
       if (!$self->_output_csv->print($self->_output_fh, $data)) {
         warn $self->_output_csv->error_diag;
