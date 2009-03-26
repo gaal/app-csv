@@ -17,11 +17,10 @@ BEGIN {
 use File::Spec;
 use FindBin qw($Bin);
 
-our $csv_bin = File::Spec->rel2abs(File::Spec->catfile($Bin, '..', 'bin', 'csv'));
-our $infile = File::Spec->rel2abs(File::Spec->catfile($Bin, "input1.csv"));
-our $expected_outfile = File::Spec->rel2abs(File::Spec->catfile($Bin, "output1.csv"));
+our $csv_bin = File::Spec->catfile($Bin, '..', 'bin', 'csv');
+our $infile = File::Spec->catfile($Bin, "input1.csv");
+our $expected_outfile = File::Spec->catfile($Bin, "output1.csv");
 my $outfile = File::Spec->catfile(temp_root(), 'output1.csv');
-$outfile = File::Spec->rel2abs($outfile);
 
 my @args = ("csv", libs(), $csv_bin,
     '--input' => $infile, '--output' => $outfile, 2, 1);
