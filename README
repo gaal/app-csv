@@ -1,6 +1,6 @@
 App::CSV - provides the "csv" command line tool
 
-This package provide a command-line tool to manipulate CSV (and other
+This package provides a command-line tool to manipulate CSV (and other
 delimited, line-based) files.
 
 License
