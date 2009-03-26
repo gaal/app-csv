@@ -5,6 +5,12 @@ use Text::CSV;
 
 our $VERSION = '0.01';
 
+BEGIN {
+  # One day, MooseX::Getopt will allow us to pass pass_through to Getopt::Long.
+  # Until then, do the following ugly thing unconditionally.
+  use Getopt::Long qw(:config pass_through);
+}
+
 with 'MooseX::Getopt';
 
 has _input_fh => (

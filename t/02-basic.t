@@ -35,5 +35,5 @@ sub setup {
   $ac->init;
   is_deeply($ac->columns, [0, -1], "column normalization");
   $ac->run;
-  is($$output, "1,3\n,11,33\n111,333\n", "1-based, two columns, negative columns");
+  is($$output, "1,3\n11,33\n111,333\n", "1-based, two columns, negative columns");
 }
