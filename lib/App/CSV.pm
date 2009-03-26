@@ -163,3 +163,13 @@ sub run {
 }
 
 1;
+__END__
+=head1 NAME
+
+App::CSV - process CSV files
+
+=head1 REDIRECTION
+
+Please see L<csv>.
+
+=cut

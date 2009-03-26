@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-require 5.6;
+require 5.006;
 
 use ExtUtils::MakeMaker;
 
@@ -21,5 +21,8 @@ WriteMakefile(
 
     # Testing
     'IO::String' => 0,
+
+    # Recommended
+    # Temp::TestDir
   },
 );

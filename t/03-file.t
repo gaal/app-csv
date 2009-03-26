@@ -24,8 +24,7 @@ my $outfile = File::Spec->catfile(temp_root(), 'output1.csv');
 
 my @args = ("csv", libs(), $csv_bin,
     '--input' => $infile, '--output' => $outfile, 2, 1);
-diag("$^X @args");
-#system {"strace"} qw(-o /tmp/xx -e trace=open), $^X, @args and die "system: $!";
+diag("system {$^X} @args");
 system {$^X} @args and die "system: $!";
 
 diag("temporary output at $outfile");
