@@ -120,11 +120,11 @@ sub init {
 
   # DWIMmy TSV
   if ($self->from_tsv ||
-      ($self->has_from_tsv && $self->input && $self->input =~ /\.tsv$/)) {
+      (!$self->has_from_tsv && $self->input && $self->input =~ /\.tsv$/)) {
     $self->sep_char("\t");
   }
   if ($self->to_tsv ||
-      ($self->has_to_tsv && $self->output && $self->output =~ /\.tsv$/)) {
+      (!$self->has_to_tsv && $self->output && $self->output =~ /\.tsv$/)) {
     $self->output_sep_char("\t");
   }
 
