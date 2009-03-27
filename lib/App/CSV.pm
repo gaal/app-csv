@@ -30,19 +30,14 @@ hasrw input => (isa => 'Str');
 hasrw output => (isa => 'Str');
 
 # isa => 'FileHandle' (or IO::String...)
-hasrw _input_fh => (
-);
+hasrw _input_fh => ();
 
 # isa => 'FileHandle' (or IO::String...)
 hasrw _output_fh => ();
 
 hasrw _init => (isa => 'Bool');
 
-hasrw columns => (
-  metaclass   => 'Getopt',
-  isa => 'ArrayRef[Int]',
-  predicate => 'has_columns',
-);
+hasrw columns => (isa => 'ArrayRef[Int]');
 
 # The input CSV processor.
 hasrw _input_csv => ();
@@ -53,6 +48,7 @@ hasrw _output_csv => ();
 # Text::CSV options, straight from the manpage.
 # We override Text::CSV's default here... because it's WRONG.
 our %TextCSVOptions = (
+    # name              => [type, default]
     quote_char          => ['Str', '"'],
     escape_char         => ['Str', '"'],
     sep_char            => ['Str', ','],
@@ -72,8 +68,11 @@ our %TextCSVOptions = (
 while (my($attr, $opts) = each %TextCSVOptions) {
   my($type, $default) = @$opts;
   hasrw $attr => (isa => $type, default => $default);
-  hasrw "output_$attr" => (isa => $type,
-      lazy => 1, default => sub { $_[0]->$attr });
+  hasrw "output_$attr" => (
+    isa => $type,
+    lazy => 1,
+    default => sub { $_[0]->$attr }
+  );
 }
 
 # TODO: command line aliases?
@@ -113,7 +112,7 @@ sub init {
   $self->_init(1);
 
   # TODO: zero-based field numbers as an option? nah?
-  my @columns = (($self->has_columns ? @{$self->columns} : ()), @{$self->extra_argv});
+  my @columns = (($self->columns ? @{$self->columns} : ()), @{$self->extra_argv});
   $self->columns([map { __normalize_column($_) } @columns]) if @columns;
 
   $self->_setup_fh($_) for qw(input output);
@@ -142,7 +141,7 @@ sub run {
   INPUT: { do {
     my $data;
     while (defined($data = $self->_input_csv->getline($self->_input_fh))) {
-      if ($self->has_columns) {
+      if ($self->columns) {
         @$data = @$data[@{ $self->columns }];
       }
       
