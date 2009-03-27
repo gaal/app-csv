@@ -47,7 +47,7 @@ Negative numbers are counted from the line end. Without any column list,
 B<csv> selects all columns (this is still useful to normalize quoting
 style etc.).
 
-=head1 OPTIONS
+=head2 Command line options
 
 The following options are passed to L<Text::CSV>. When preceded by the
 prefix "output_", the destination is affected. Otherwise these options
@@ -55,27 +55,27 @@ affect both input and output.
 
 =over 4
 
-=item quote_char
+=item B<--quote_char>
 
-=item escape_char
+=item B<--escape_char>
 
-=item sep_char
+=item B<--sep_char>
 
-=item eol
+=item B<--eol>
 
-=item always_quote
+=item B<--always_quote>
 
-=item binary
+=item B<--binary>
 
-=item keep_meta_info
+=item B<--keep_meta_info>
 
-=item allow_loose_quotes
+=item B<--allow_loose_quotes>
 
-=item allow_loose_escapes
+=item B<--allow_loose_escapes>
 
-=item allow_whitespace
+=item B<--allow_whitespace>
 
-=item verbatim
+=item B<--verbatim>
 
 =back
 
@@ -86,9 +86,9 @@ The following additional options are available:
 
 =over 4
 
-=item from_tsv
+=item B<--from_tsv>
 
-=item to_tsv
+=item B<--to_tsv>
 
 Use tabs instead of commas as the delimiter. When B<csv> has the input or
 output filenames available, this is inferred when they end with C<.tsv>.
