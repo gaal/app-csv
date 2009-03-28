@@ -86,6 +86,13 @@ The following additional options are available:
 
 =over 4
 
+=item B<--input>
+
+=item B<--output>
+
+Filenames for input and output. "-" means stdio. Useful to trigger TSV mode
+(C<--from_tsv> and C<--to_tsv>).
+
 =item B<--from_tsv>
 
 =item B<--to_tsv>
