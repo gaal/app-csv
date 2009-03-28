@@ -16,42 +16,52 @@ BEGIN {
 
 with 'MooseX::Getopt';
 
+# Create "hasrw" and "hasro" sugar for less cumbersome attribute declarations.
 # Why isn't this in Moose?
-sub hasrw {
-  my($attr, @args) = @_;
-  has $attr => (
-    is => 'rw',
-    @args,
-  );
+BEGIN {
+  my $mk_has = sub {
+    my($access) = @_;
+    return sub {
+      my($attr, @args) = @_;
+      has $attr => (
+        is => $access,
+        @args,
+      );
+    };
+  };
+  no strict 'refs';
+  *hasrw = $mk_has->('rw');
+  *hasro = $mk_has->('ro');
 }
 
-hasrw input => (isa => 'Str');
-
-hasrw output => (isa => 'Str');
+# Input and output filenames. Significant when we want to DWIM with TSV files.
+hasro input  => (isa => 'Str');
+hasro output => (isa => 'Str');
 
 # isa => 'FileHandle' (or IO::String...)
 hasrw _input_fh => ();
-
-# isa => 'FileHandle' (or IO::String...)
 hasrw _output_fh => ();
+
+# TODO: command line aliases?
+hasro from_tsv => (isa => 'Bool', predicate => 'has_from_tsv');
+hasro to_tsv   => (isa => 'Bool', predicate => 'has_to_tsv');
 
 hasrw _init => (isa => 'Bool');
 
+# Normalized column indexes.
 hasrw columns => (isa => 'ArrayRef[Int]');
 
-# The input CSV processor.
-hasrw _input_csv => ();
-
-# The output CSV processor.
+# The input and output CSV processors.
+hasrw _input_csv  => ();
 hasrw _output_csv => ();
 
 # Text::CSV options, straight from the manpage.
 # We override Text::CSV's default here... because it's WRONG.
 our %TextCSVOptions = (
-    # name              => [type, default]
+    # name              => [type, default, (@extra_opts)]
     quote_char          => ['Str', '"'],
     escape_char         => ['Str', '"'],
-    sep_char            => ['Str', ','],
+    sep_char            => ['Str', ',', is => 'rw'],
     eol                 => ['Any', undef],
     always_quote        => ['Int', 0],
     binary              => ['Int', 1],
@@ -66,18 +76,21 @@ our %TextCSVOptions = (
 # But you can override it just for output by saying --output_foo instead
 # of --foo.   (Thanks, gphat and t0m.)
 while (my($attr, $opts) = each %TextCSVOptions) {
-  my($type, $default) = @$opts;
-  hasrw $attr => (isa => $type, default => $default);
-  hasrw "output_$attr" => (
+  my($type, $default, @extra_opts) = @$opts;
+  has $attr => (
+    is => 'ro',  # May be overridden with '@extra_opts'.
+    isa => $type,
+    default => $default,
+    @extra_opts
+  );
+  has "output_$attr" => (
+    is => 'ro',
     isa => $type,
     lazy => 1,
-    default => sub { $_[0]->$attr }
+    default => sub { $_[0]->$attr },
+    @extra_opts,
   );
 }
-
-# TODO: command line aliases?
-hasrw from_tsv => (isa => 'Bool', predicate => 'has_from_tsv');
-hasrw to_tsv => (isa => 'Bool', predicate => 'has_to_tsv');
 
 
 sub __normalize_column {
@@ -162,6 +175,7 @@ sub run {
 }
 
 1;
+
 __END__
 =head1 NAME
 
