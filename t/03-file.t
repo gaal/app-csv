@@ -18,8 +18,8 @@ use File::Spec;
 use FindBin qw($Bin);
 
 our $temp_root = temp_root();
-our $csv_bin = File::Spec->catfile($Bin, '..', 'bin', 'csv');
-our $infile = File::Spec->catfile($Bin, "input1.csv");
+our $csv_bin   = File::Spec->catfile($Bin, '..', 'bin', 'csv');
+our $infile    = File::Spec->catfile($Bin, "input1.csv");
 
 test_to('output1.csv');
 test_to('output1.tsv');

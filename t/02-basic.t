@@ -16,9 +16,9 @@ my $input = <<'.';
 sub setup {
   local @ARGV = @_;
   my $output_fh = IO::String->new;
-  my $ac = App::CSV->new_with_options;
-  $ac->_input_fh(IO::String->new($input));
-  $ac->_output_fh($output_fh);
+  my $ac = App::CSV->new_with_options(
+    _input_fh  => IO::String->new($input),
+    _output_fh => $output_fh);
   return($ac, $output_fh->string_ref);
 }
 
@@ -35,5 +35,6 @@ sub setup {
   $ac->init;
   is_deeply($ac->columns, [0, -1], "column normalization");
   $ac->run;
-  is($$output, "1,3\n11,33\n111,333\n", "1-based, two columns, negative columns");
+  is($$output, "1,3\n11,33\n111,333\n",
+      "1-based, two columns, negative columns");
 }
