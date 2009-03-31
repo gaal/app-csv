@@ -10,7 +10,8 @@ WriteMakefile(
   NAME      => 'App::CSV',
   AUTHOR    => 'Gaal\ Yahas\ \<gaal\@forum2\.org\>',
   ABSTRACT  => 'Manipulate CSV files from the command line',
-  VERSION   => '0.02',
+  VERSION_FROM => 'lib/App/CSV.pm',
+  SIGN => 1,
   EXE_FILES => [ grep { /\w$/ } glob("bin/*") ],
   (eval { ExtUtils::MakeMaker->VERSION(6.21) } ? (LICENSE => 'mit') : ()),
   PREREQ_PM    => {

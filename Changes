@@ -1,5 +1,8 @@
 Changes for App-CSV
 
+* 2009-03-31: Version 0.03
+  Work around a crashing bug in Text::CSV_XS on some systems.
+
 * 2009-03-27: Version 0.02
   Correct DWIMmy TSV, docfixes.
 
