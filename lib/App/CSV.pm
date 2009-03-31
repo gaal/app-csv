@@ -65,7 +65,7 @@ our %TextCSVOptions = (
     quote_char          => ['Str', '"',   'q'],
     escape_char         => ['Str', '"',   'e'],
     sep_char            => ['Str', ',',   's', is => 'rw'],
-    eol                 => ['Any', undef],
+    eol                 => ['Any', ''],
     always_quote        => ['Int', 0],
     binary              => ['Int', 1,     'b'],
     keep_meta_info      => ['Int', 0,     'k'],
