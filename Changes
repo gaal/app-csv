@@ -1,5 +1,8 @@
 Changes for App-CSV
 
+* 2009-04-05: Version 0.04
+  Refreshed META.yml file, telling CPAN about MIT license.
+
 * 2009-03-31: Version 0.03
   Work around a crashing bug in Text::CSV_XS on some systems.
 
