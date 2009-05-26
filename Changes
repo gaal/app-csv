@@ -1,5 +1,8 @@
 Changes for App-CSV
 
+* 2009-05-26: Version 0.05
+  Don't barf on implicit stdio (thanks Dotan Dimet).
+
 * 2009-04-05: Version 0.04
   Refreshed META.yml file, telling CPAN about MIT license.
 

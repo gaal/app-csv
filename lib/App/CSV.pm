@@ -4,7 +4,7 @@ use Moose;
 use IO::Handle;
 use Text::CSV;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 BEGIN {
   # One day, MooseX::Getopt will allow us to pass pass_through to Getopt::Long.
@@ -36,8 +36,8 @@ BEGIN {
 }
 
 # Input and output filenames. Significant when we want to DWIM with TSV files.
-hasro input  => (isa => 'Str', cmd_aliases => 'i');
-hasro output => (isa => 'Str', cmd_aliases => 'o');
+hasrw input  => (isa => 'Str', cmd_aliases => 'i');
+hasrw output => (isa => 'Str', cmd_aliases => 'o');
 
 # isa => 'FileHandle' (or IO::String...)
 hasrw _input_fh => ();

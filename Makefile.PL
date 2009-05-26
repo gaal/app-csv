@@ -24,6 +24,7 @@ WriteMakefile(
     'IO::String' => 0,
 
     # Recommended
-    # Temp::TestDir
+    # 'Temp::TestDir' => 0,
+    # 'IPC::Run' => 0,
   },
 );
