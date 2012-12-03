@@ -54,6 +54,9 @@ hasrw _init => (isa => 'Bool');
 # Normalized column indexes.
 hasrw columns => (isa => 'ArrayRef[Int]', cmd_aliases => 'c');
 
+# named fields
+hasrw fields => (isa => 'ArrayRef[Str]', cmd_aliases => 'f');
+
 # The input and output CSV processors.
 hasrw _input_csv  => ();
 hasrw _output_csv => ();
@@ -113,6 +116,38 @@ sub __normalize_column {
   return ($in <= 0) ? $in : $in - 1;
 }
 
+sub _get_header_map {
+  my ($self) = @_;
+
+  my $header_line = $self->_peek_line;
+  my %header_map;
+  my $field_number = 0;
+  for my $field (@$header_line) {
+    $header_map{$field} = ++$field_number;
+  }
+
+  return \%header_map;
+}
+
+sub _fields_to_columns {
+  my ($self, $fields) = @_;
+
+  my @all_fields = map { /^(\d+)-(\d+)$/ ? $1 .. $2 : $_ } map { split "," } @$fields;
+  my @named_fields = grep { /\D/ } @all_fields;
+
+  my @normalized_fields;
+  # if there is at least one named field, we need to read the header line from input and translate into column number
+  if (@named_fields) {
+    my $header_map = $self->_get_header_map;
+    @normalized_fields = map { __normalize_column(/^\d+/ ? $_ : $header_map->{$_} ) } @all_fields;
+  }
+  else {
+    @normalized_fields = map { __normalize_column($_) } @all_fields;
+  }
+
+  return \@normalized_fields;
+}
+
 # TODO: You know, I end up with something like this on a lot of projects.
 # Why isn't this easier? Having to remember to "use IO::Handle" is sad, too.
 sub _setup_fh {
@@ -159,6 +194,49 @@ sub init {
       map { $_ => $self->$_ } keys %TextCSVOptions }));
   $self->_output_csv(Text::CSV->new({
       map { my $o = "output_$_"; $_ => $self->$o } keys %TextCSVOptions }));
+
+  # if columns aren't specified, look for --fields option this allows
+  # use of named fields, list of comma-separated fields list, field
+  # ranges and so on
+
+  if (@columns) {
+    warn "--fields (-f) option is ignored since columns are also specified." if $self->fields;
+  }
+  else {
+    my @fields = $self->fields ? @{$self->fields} : ();
+    if (@fields) {
+      my $columns = $self->_fields_to_columns(\@fields);
+      $self->columns($columns);
+    }
+    # $self->columns($self->__fields_to_columns(\@fields)) if @fields;
+  }
+}
+
+{
+  my $line_read;
+
+  # read a line from input, but push it back for later reading
+  sub _peek_line {
+    my ($self) = @_;
+
+    $line_read = $self->_input_csv->getline($self->_input_fh);
+  }
+
+  # if there is a line already read, return it otherwise read from input
+
+  sub _get_line {
+    my ($self) = @_;
+
+    my $line;
+    if ($line_read) {
+      $line = $line_read;
+      undef $line_read;
+      return $line;
+    }
+    else {
+      return $self->_input_csv->getline($self->_input_fh);
+    }
+  }
 }
 
 sub run {
@@ -168,7 +246,7 @@ sub run {
   # L<perlsyn/"modifiers don't take loop labels">
   INPUT: { do {
     my $data;
-    while (defined($data = $self->_input_csv->getline($self->_input_fh))) {
+    while (defined($data = $self->_get_line)) {
       if ($self->columns) {
         @$data = @$data[@{ $self->columns }];
       }
