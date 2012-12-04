@@ -54,7 +54,7 @@ hasrw _init => (isa => 'Bool');
 # Normalized column indexes.
 hasrw columns => (isa => 'ArrayRef[Int]', cmd_aliases => 'c');
 
-# named fields
+# Named fields.
 hasrw fields => (isa => 'ArrayRef[Str]', cmd_aliases => 'f');
 
 # The input and output CSV processors.
@@ -136,7 +136,8 @@ sub _fields_to_columns {
   my @named_fields = grep { /\D/ } @all_fields;
 
   my @normalized_fields;
-  # if there is at least one named field, we need to read the header line from input and translate into column number
+  # If there is at least one named field, we need to read the header line from input and translate
+  # into column number.
   if (@named_fields) {
     my $header_map = $self->_get_header_map;
     @normalized_fields = map { __normalize_column(/^\d+/ ? $_ : $header_map->{$_} ) } @all_fields;
@@ -195,35 +196,32 @@ sub init {
   $self->_output_csv(Text::CSV->new({
       map { my $o = "output_$_"; $_ => $self->$o } keys %TextCSVOptions }));
 
-  # if columns aren't specified, look for --fields option this allows
+  # If columns aren't specified, look for the --fields option. It allows
   # use of named fields, list of comma-separated fields list, field
-  # ranges and so on
+  # ranges and so on.
 
   if (@columns) {
     warn "--fields (-f) option is ignored since columns are also specified." if $self->fields;
-  }
-  else {
+  } else {
     my @fields = $self->fields ? @{$self->fields} : ();
     if (@fields) {
       my $columns = $self->_fields_to_columns(\@fields);
       $self->columns($columns);
     }
-    # $self->columns($self->__fields_to_columns(\@fields)) if @fields;
   }
 }
 
 {
   my $line_read;
 
-  # read a line from input, but push it back for later reading
+  # Read a line from input, but push it back for later reading.
   sub _peek_line {
     my ($self) = @_;
 
     $line_read = $self->_input_csv->getline($self->_input_fh);
   }
 
-  # if there is a line already read, return it otherwise read from input
-
+  # If there is a line already read, return it; otherwise, read from input.
   sub _get_line {
     my ($self) = @_;
 
@@ -232,8 +230,7 @@ sub init {
       $line = $line_read;
       undef $line_read;
       return $line;
-    }
-    else {
+    } else {
       return $self->_input_csv->getline($self->_input_fh);
     }
   }
@@ -258,7 +255,7 @@ sub run {
       $self->_output_fh->print("\n");
     }
 
-    # keeps us going on input errors.
+    # Keeps us going on input errors.
     # TODO: strict errors, according to command line, blah
     if (not defined $data) {
       last INPUT if $self->_input_csv->eof;
