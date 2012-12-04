@@ -4,7 +4,7 @@ use Moose;
 use IO::Handle;
 use Text::CSV;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 BEGIN {
   # One day, MooseX::Getopt will allow us to pass pass_through to Getopt::Long.

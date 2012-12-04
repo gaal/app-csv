@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 10;
 
 use App::CSV;
 use IO::String;
@@ -43,7 +43,8 @@ sub setup {
 my $input_with_headers = qq["one","two","three"\n] . $input;
 
 {
-  my ($ac, $output) = setup($input_with_headers, qw[-f three,1]);   # csv -f three,1,two
+  no warnings 'qw';
+  my ($ac, $output) = setup($input_with_headers, qw[-f three,1]);   # csv -f three,1
   $ac->init;
   is_deeply($ac->columns, [2, 0], "column normalization");
   $ac->run;
@@ -60,3 +61,13 @@ my $input_with_headers = qq["one","two","three"\n] . $input;
       "1-based, three columns, field ranges");
 }
 
+my $input_with_tricky_headers = qq["Revenue","Q4 2012","Q1 2013"\n] . $input;
+
+{
+  my ($ac, $output) = setup($input_with_tricky_headers, qq[-f], qq[Q1 2013,1]);   # csv -f "Q1 2013",1
+  $ac->init;
+  is_deeply($ac->columns, [2, 0], "column normalization");
+  $ac->run;
+  is($$output, qq["Q1 2013",Revenue\n3,1\n33,11\n333,111\n],
+      "1-based, two columns, named fields with spaces");
+}

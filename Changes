@@ -1,5 +1,8 @@
 Changes for App-CSV
 
+* 2012-12-04: Version 0.06
+  Support --fields (thanks Prakash Kailasa).
+
 * 2009-05-26: Version 0.05
   Don't barf on implicit stdio (thanks Dotan Dimet).
 
