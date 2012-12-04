@@ -21,6 +21,12 @@ csv - process CSV files from the command line
   # Reads the first two fields, as well as the last one, from "report.csv".
   # Data is cleaned up and emitted as CSV.
 
+  csv --fields three,one,two < report.csv
+
+  # First line of the input (from file "report.csv") is considered as
+  # header line; the fields are emitted in the order "three", "one",
+  # and "two". Data is cleaned up and emitted as CSV.
+
   csv --input report.csv --to_tsv
 
   # Converts the whole report to TSV (tab-separated values).
@@ -92,6 +98,20 @@ The following additional options are available:
 
 Filenames for input and output. "-" means stdio. Useful to trigger TSV mode
 (C<--from_tsv> and C<--to_tsv>).
+
+=item B<--columns>
+
+Column numbers may be specified using this option.
+
+=item B<--fields>
+
+When this option is specified, the first line of the input file is
+considered as a header line. This option takes a comma-separated list
+of column-names from the first line.
+
+For convenience, this option also accepts a comma-separated list of
+column numbers as well. Multiple --fields options are also allowed,
+and both column names and numbers can be mixed together.
 
 =item B<--from_tsv>
 
