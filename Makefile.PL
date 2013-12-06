@@ -28,4 +28,18 @@ WriteMakefile(
     # 'Temp::TestDir' => 0,
     # 'IPC::Run' => 0,
   },
+  META_MERGE => {
+    'meta-spec' => { version => 2 },
+    resources   => {
+      repository => {
+        type => 'git',
+        url  => 'https://github.com/gaal/app-csv.git',
+        web  => 'https://github.com/gaal/app-csv',
+      },
+      bugtracker => {
+        web     => 'https://rt.cpan.org/Public/Dist/Display.html?Name=App-CSV',
+        mailto  => 'bug-App-CSV@rt.cpan.org',
+      },
+    },
+  },
 );
