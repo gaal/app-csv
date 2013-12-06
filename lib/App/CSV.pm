@@ -140,6 +140,10 @@ sub _fields_to_columns {
   # into column number.
   if (@named_fields) {
     my $header_map = $self->_get_header_map;
+    if (my @missing_fields = grep { not defined $header_map->{$_} } @named_fields) {
+        die "The following named fields aren't in the input header: ",
+            join(", ", @missing_fields), "\n";
+    }
     @normalized_fields = map { __normalize_column(/^\d+/ ? $_ : $header_map->{$_} ) } @all_fields;
   }
   else {
