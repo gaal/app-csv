@@ -253,7 +253,7 @@ sub run {
       }
       
       if (!$self->_output_csv->print($self->_output_fh, $data)) {
-        warn $self->_output_csv->error_diag;
+        warn $self->format_error("Warning - Output error", diag => [$self->_input_csv->error_diag]), "\n";
         next INPUT;
       }
       $self->_output_fh->print("\n");
@@ -263,9 +263,26 @@ sub run {
     # TODO: strict errors, according to command line, blah
     if (not defined $data) {
       last INPUT if $self->_input_csv->eof;
-      warn $self->_input_csv->error_diag;
+      warn $self->format_error("Warning - Input error", line => $., diag => [$self->_input_csv->error_diag]), "\n";
     }
   } }
+}
+
+sub format_error {
+    my $self = shift;
+    my $msg  = shift;
+    my %args = @_;
+
+    $msg .= ", line $args{line}"
+        if defined $args{line};
+
+    if ($args{diag}) {
+        my ($code, $err, $pos, $record) = @{ $args{diag} || [] };
+        $msg .= ": " . join " - ",
+            $code, $err, "position $pos",
+            (defined $record ? "record $record" : ());
+    }
+    return $msg;
 }
 
 1;
