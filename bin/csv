@@ -133,7 +133,7 @@ Gaal Yahas C<< <gaal@forum2.org> >>
 
 =head1 THANKS
 
-nothingmuch, gphat, t0m, themoniker, and Prakash Kailasa.
+nothingmuch, gphat, t0m, themoniker, Prakash Kailasa, and tsibley.
 
 =head1 BUGS
 
@@ -151,7 +151,7 @@ L<http://github.com/gaal/app-csv/tree/master>
 
 =head1 COPYRIGHT (The "MIT" License)
 
-Copyright 2012 Gaal Yahas.
+Copyright 2013 Gaal Yahas.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
