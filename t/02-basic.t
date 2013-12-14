@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 13;
 
 use App::CSV;
 use IO::String;
@@ -70,4 +70,14 @@ my $input_with_tricky_headers = qq["Revenue","Q4 2012","Q1 2013"\n] . $input;
   $ac->run;
   is($$output, qq["Q1 2013",Revenue\n3,1\n33,11\n333,111\n],
       "1-based, two columns, named fields with spaces");
+}
+
+{
+  no warnings 'qw';
+  my ($ac, $output) = setup($input_with_headers, qw[-f three,four,1]);   # csv -f three,four,1
+  eval { $ac->init };
+  ok($@, "init failed");
+  like($@, qr/^The following named fields aren't in the input header: four/,
+      "error about bad field name");
+  is($$output, "", "no output");
 }
