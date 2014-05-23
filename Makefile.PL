@@ -16,8 +16,7 @@ WriteMakefile(
   EXE_FILES => [ grep { /\w$/ } glob("bin/*") ],
   (eval { ExtUtils::MakeMaker->VERSION(6.21) } ? (LICENSE => 'mit') : ()),
   PREREQ_PM    => {
-    (eval { require Text::CSV_XS } ? ("Text::CSV_XS" => 0)
-                                   : ("Text::CSV" => 0)),
+    'Text::CSV' => 0,
     'Moose' => 0,
     'MooseX::Getopt' => 0,
 
